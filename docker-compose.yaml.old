@@ -1,0 +1,48 @@
+version: '3'
+services:
+
+  cutlerweb:
+    image: rocho02.ddns.net/admin/cutlergyor:0.0.15
+    networks:
+      cutler_network:
+    ports:
+      - "40001:80"
+      - "40002:443"
+    volumes:
+      - cutler_photos:/var/www/html/cutler/frontend/web/uploads/profile
+    environment:
+      FITNESS_DB_HOST: cutlerdb
+      FITNESS_DB_NAME: cutler_prod2
+      FITNESS_DB_PORT:
+      FITNESS_DB_USERNAME: cutler_prod
+      FITNESS_DB_PASSWORD: cutler_prod
+      FITNESS_MAIL_HOST: cutlermail
+      FITNESS_MAIL_PORT: 1025
+      FITNESS_MAIL_USERNAME: test
+      FITNESS_MAIL_PASSWORD: test
+
+  cutlerdb:
+    image: mariadb:10.1
+    networks:
+      cutler_network:
+    volumes:
+      - cutler_mariadb:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: cutler
+      MYSQL_DATABASE: cutler_prod2
+      MYSQL_USER: cutler_prod
+      MYSQL_PASSWORD: cutler_prod
+
+  cutlermail:
+    image: reachfive/fake-smtp-server
+    networks:
+      cutler_network:
+
+volumes:
+  cutler_photos: {}
+  cutler_mariadb: {}
+
+networks:
+  cutler_network:
+
